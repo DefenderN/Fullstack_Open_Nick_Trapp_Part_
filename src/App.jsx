@@ -15,6 +15,16 @@ const App = () => {
             )  
     }, [])
 
+    // Find user data in local storage from previous session
+    useEffect(() => {
+        const loggedUserJSON = window.localStorage.getItem('user')
+        if (loggedUserJSON) {
+            const user = JSON.parse(loggedUserJSON)
+            setUser(user)
+            // noteService.setToken(user.token)
+        }
+      }, [])
+
     const handleLogin = async (event) => {
         event.preventDefault()
         console.log('logging in with', username, password)
@@ -24,9 +34,19 @@ const App = () => {
             setUser(user)
             setUsername('')
             setPassword('')
+
+            // save user to local storage
+            window.localStorage.setItem("user", JSON.stringify(user))
+
         } catch (exception) {
             console.log('Wrong credentials')
         }
+    }
+
+    const handleLogout = (event) => {
+        console.log('logging out')
+        window.localStorage.removeItem('user')
+        setUser(null)
     }
 
     const loginForm = () => {
@@ -59,6 +79,10 @@ const App = () => {
         return (
             <div>
                 <p>{user.name} is logged in</p>
+                <button
+                    type="button"
+                    onClick={handleLogout}
+                    >Logout</button>
             </div>
         )
     }
